@@ -14,7 +14,6 @@ namespace properties
         virtual ~IProperty() noexcept = default;
         _NODISCARD virtual std::string name() const = 0;
         _NODISCARD virtual std::string toString() const = 0;
-        _NODISCARD virtual bool operator<(const IProperty& other) const = 0;
     };
 
     template<typename T>
@@ -25,10 +24,14 @@ namespace properties
         ~Property() noexcept override = default;
         _NODISCARD std::string name() const override;
         _NODISCARD std::string toString() const override;
+
+        void updateValue(T&& value);
     private:
         std::string name_{};
         T value_{};
     };
+
+
 
     template <typename T>
     Property<T>::Property(std::string name, T&& value)
@@ -49,7 +52,13 @@ namespace properties
             return value_;
         else
             return std::to_string(value_);
-    }        
+    }
+
+    template <typename T>
+    void Property<T>::updateValue(T&& value)
+    {
+        value_ = std::forward<T>(value);
+    }
 #if 1
     template<typename T>
     std::shared_ptr<IProperty> makeProperty(const std::string& name, T&& value)

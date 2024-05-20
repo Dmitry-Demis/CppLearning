@@ -20,10 +20,12 @@ namespace geometry
         virtual _NODISCARD std::set<std::shared_ptr<properties::IProperty>> properties() const = 0;
     protected:
         void addProperty(std::shared_ptr<properties::IProperty> property);
+
         template<typename T>
         void updateProperty(const std::string& name, T&& value);
-    private:
+    protected:
         std::set<std::shared_ptr<properties::IProperty>> properties_{};
+    private:
     };
 
     template <typename T>
@@ -35,7 +37,7 @@ namespace geometry
                 return property->name() == name;
             }) };
         if (it != properties_.end())
-            (*it)->updateValue(value);
+            (*it)->updateValue(std::forward<T>(value));
 
     }
 

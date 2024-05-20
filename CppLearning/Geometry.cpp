@@ -13,7 +13,8 @@ namespace geometry
 	Offset::Offset(double x, double y) noexcept
 		: x_{ x }, y_{ y }
 	{
-		
+		addProperty(properties::makeProperty("x", x_));
+		addProperty(properties::makeProperty("y", y_));
 	}
 	double Offset::x() const noexcept { return x_; }
 	double Offset::y() const noexcept { return y_; }
@@ -26,16 +27,7 @@ namespace geometry
 
 	std::set<std::shared_ptr<properties::IProperty>> Offset::properties() const
 	{
-		std::set<std::shared_ptr<properties::IProperty>> props{};
-		auto propertyTuple
-		{
-			std::make_tuple(
-				properties::makeProperty("x", x_),
-				properties::makeProperty("y", y_)
-			)
-		};
-		addProperties(propertyTuple, props);
-		return props;
+		return properties_;
 	}
 }
 
