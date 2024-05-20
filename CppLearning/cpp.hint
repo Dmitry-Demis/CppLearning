@@ -1,0 +1,4 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define PROPERTY(type, name) private: type name##_; public: type name() const { return name##_; } void name(type value) { name##_ = value; } private: void addProperty_##name(std::set<std::shared_ptr<IProperty>>& props) const { props.insert(std::make_shared<Property<(type)>>(#name, name##_)); }
