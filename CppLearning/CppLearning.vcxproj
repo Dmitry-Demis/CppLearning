@@ -131,11 +131,13 @@
     <ClCompile Include="CppLearning.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Properties.cpp" />
+    <ClCompile Include="Strategy.cpp" />
     <ClCompile Include="Visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Properties.h" />
+    <ClInclude Include="Strategy.h" />
     <ClInclude Include="Visitor.h" />
   </ItemGroup>
   <ItemGroup>

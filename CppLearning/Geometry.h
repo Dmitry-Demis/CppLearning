@@ -4,6 +4,8 @@
 #include <set>
 #include <string>
 #include "Properties.h"
+#include <unordered_map>
+#include <typeindex>
 
 namespace visitor
 {
@@ -17,29 +19,13 @@ namespace geometry
     public:
         virtual ~Component() = default;
         virtual void accept(visitor::IGeometryVisitor& visitor) const = 0;
-        virtual _NODISCARD std::set<std::shared_ptr<properties::IProperty>> properties() const = 0;
+        _NODISCARD std::set<std::shared_ptr<properties::IProperty>> properties() const;
     protected:
         void addProperty(std::shared_ptr<properties::IProperty> property);
-
-        template<typename T>
-        void updateProperty(const std::string& name, T&& value);
-    protected:
-        std::set<std::shared_ptr<properties::IProperty>> properties_{};
     private:
+        std::set<std::shared_ptr<properties::IProperty>> properties_{};
     };
-
-    template <typename T>
-    void Component::updateProperty(const std::string& name, T&& value)
-    {
-        auto it{ std::find_if(properties_.begin(), properties_.end(), 
-            [&name](const std::shared_ptr<properties::IProperty>& property)
-            {
-                return property->name() == name;
-            }) };
-        if (it != properties_.end())
-            (*it)->updateValue(std::forward<T>(value));
-
-    }
+    
 
     class Offset final : public Component {
     public:
@@ -49,18 +35,37 @@ namespace geometry
         void x(double x) noexcept;
         void y(double y) noexcept;
         void accept(visitor::IGeometryVisitor& visitor) const override;
-        std::set<std::shared_ptr<properties::IProperty>> properties() const override;
-    private:
     private:
         double x_{};
         double y_{};
     };
-    class Geometry
+
+    class Skew final : public Component {
+    public:
+        explicit Skew(double x = 0.0, double y = 0.0) noexcept;
+        _NODISCARD double x() const noexcept;
+        _NODISCARD double y() const noexcept;
+        void x(double x) noexcept;
+        void y(double y) noexcept;
+        void accept(visitor::IGeometryVisitor& visitor) const override;
+    private:
+        double x_{};
+        double y_{};
+    };
+
+    class Geometry final: public Component
     {
+    public:
+        Geometry();
+        void accept(visitor::IGeometryVisitor& visitor) const override;
+        const std::unordered_map<std::type_index, std::shared_ptr<Component>>& components() const & {
+            return components_;
+        }
+    private:
+        template<typename C, typename... Args>
+        void addComponent(Args&&... args) noexcept;
+    private:
+        std::unordered_map<std::type_index, std::shared_ptr<Component>> components_{};
     };
 }
-
-
-
-
 #endif // GEOMETRY_H
