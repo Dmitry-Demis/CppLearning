@@ -60,29 +60,25 @@ namespace geometry
 
 	Geometry::Geometry()
 	{
-		addComponent<Offset>(10,20);
-		addComponent<Skew>(20,10);
+		addComponent<Offset>();
+		addComponent<Skew>();
 	}
 
 	void Geometry::accept(visitor::IGeometryVisitor& visitor) const
 	{
 		visitor.visit(*this);
 	}
-	template<typename C, typename ...Args>
-	void Geometry::addComponent(Args && ...args) noexcept
+
+	
+
+	Geometry::Builder::Builder(Geometry geometry) noexcept
+		: geometry_{std::move(geometry)}
 	{
-		using ComponentType = typename std::decay_t<C>;
-		auto component{ std::make_shared<ComponentType>(std::forward<Args>(args)...) };
-		auto index{ std::type_index(typeid(ComponentType)) };
-		if (const auto it{ components_.find(index) }; it != components_.end())
-			it->second = component;
-		else
-			components_.emplace(index, component);
-		for (const std::shared_ptr<properties::IProperty>& c : component->properties())
-		{
-			addProperty(c);
-		}
-		
+	}
+
+	Geometry Geometry::Builder::build()
+	{
+		return std::move(geometry_);
 	}
 }
 

@@ -128,6 +128,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Builder.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="CppLearning.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Properties.cpp" />
@@ -135,6 +137,8 @@
     <ClCompile Include="Visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Builder.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="Strategy.h" />

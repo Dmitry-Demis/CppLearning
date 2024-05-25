@@ -1,6 +1,7 @@
 #include "Visitor.h"
 #include "Geometry.h"
 #include "Strategy.h"
+#include "Properties.h"
 #include <iostream>
 #include <sstream>
 
@@ -32,20 +33,11 @@ namespace visitor
 		auto separator{ false };
 		for (const auto& property : component.properties()) {
 			if (separator)
-				oss << ",\n";
-			oss << "\t\"" << property->name() << "\" : " << property->toString();
+				oss << ",";
+			oss << property->name() << " : " << property->toString();
 			separator = true;
 		}
-		oss << "\n}";
-
-		// Вызываем для каждого компонента внутри Geometry
-		if constexpr (std::is_base_of_v<geometry::Component, T> && std::is_same_v<T, geometry::Geometry>) {
-			const auto& comps = component.components();
-			for (const auto& [index, comp] : comps) {
-				oss << ",\n";
-				print(std::to_string(index.hash_code()), *comp);
-			}
-		}
+		oss << "}\n";
 		inherited::print(oss);
 	}
 

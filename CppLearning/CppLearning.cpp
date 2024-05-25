@@ -9,18 +9,19 @@
 
 int main() {
 
-    geometry::Skew off{ 13.0, 17.0 };
     visitor::GeometryPrinter printer{std::make_shared<strategy::ConsoleOutputStrategy>()};
-    
-    std::vector<std::shared_ptr<geometry::Component>> v;
-   
-    v.emplace_back(std::make_shared<geometry::Offset>(off.x(), off.y()));
-    v.emplace_back(std::make_shared<geometry::Skew>(15, 22));
 
-    geometry::Geometry g{};
-    g.accept(printer);
+	geometry::Geometry geometry = geometry::Geometry::Builder{}
+	                              .setComponent<geometry::Offset>(30.0, 40.0)
+	                              .setComponent<geometry::Skew>(10.0, 20.0)
+	                              .build();
+    geometry.accept(printer);
 
-    
+    geometry = geometry::Geometry::Builder{ geometry }
+               .setComponent<geometry::Skew>(5.0, 2.0)
+               .build();
+    geometry.accept(printer);
+
 
     return 0;
 }
