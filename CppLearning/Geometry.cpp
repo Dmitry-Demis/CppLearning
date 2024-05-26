@@ -5,16 +5,16 @@
 
 namespace geometry
 {
-	std::set<std::shared_ptr<properties::IProperty>> Component::properties() const
+	_STD set<_STD shared_ptr<properties::IProperty>> Component::properties() const
 	{
 		return properties_;
 	}
-	void Component::addProperty(std::shared_ptr<properties::IProperty> property)
+	void Component::addProperty(_STD shared_ptr<properties::IProperty> property)
 	{
-		properties_.insert(std::move(property));
+		properties_.insert(_STD move(property));
 	}
 
-	Offset::Offset(double x, double y) noexcept
+	Offset::Offset(const double x, const double y) noexcept
 		: x_{ x }, y_{ y }
 	{
 		addProperty(properties::makeProperty("x", x_));
@@ -22,8 +22,8 @@ namespace geometry
 	}
 	double Offset::x() const noexcept { return x_; }
 	double Offset::y() const noexcept { return y_; }
-	void Offset::x(double x) noexcept { x_ = x; }
-	void Offset::y(double y) noexcept { y_ = y; }
+	void Offset::x(const double x) noexcept { x_ = x; }
+	void Offset::y(const double y) noexcept { y_ = y; }
 	void Offset::accept(visitor::IGeometryVisitor& visitor) const
 	{
 		visitor.visit(*this);
@@ -31,7 +31,7 @@ namespace geometry
 
 
 
-	Skew::Skew(double x, double y) noexcept
+	Skew::Skew(const double x, const double y) noexcept
 		: x_{ x }, y_{ y }
 	{
 		addProperty(properties::makeProperty("x", x_));
@@ -45,11 +45,11 @@ namespace geometry
 	{
 		return y_;
 	}
-	void Skew::x(double x) noexcept
+	void Skew::x(const double x) noexcept
 	{
 		x_ = x;
 	}
-	void Skew::y(double y) noexcept
+	void Skew::y(const double y) noexcept
 	{
 		y_ = y;
 	}
@@ -67,18 +67,6 @@ namespace geometry
 	void Geometry::accept(visitor::IGeometryVisitor& visitor) const
 	{
 		visitor.visit(*this);
-	}
-
-	
-
-	Geometry::Builder::Builder(Geometry geometry) noexcept
-		: geometry_{std::move(geometry)}
-	{
-	}
-
-	Geometry Geometry::Builder::build()
-	{
-		return std::move(geometry_);
 	}
 }
 

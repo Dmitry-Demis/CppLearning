@@ -15,8 +15,8 @@ namespace command
 	class PropertyCommand : public Command
 	{
 	public:
-		using Getter = std::function<T() const>;
-		using Setter = std::function<void(T)>;
+		using Getter = _STD function<T() const>;
+		using Setter = _STD function<void(T)>;
 
 		PropertyCommand(const Getter& getter, const Setter& setter, T&& newValue);
 		void execute() override;

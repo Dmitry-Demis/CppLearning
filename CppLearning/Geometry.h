@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <typeindex>
 
+#include "Builder.h"
+
 namespace visitor
 {
     class IGeometryVisitor;
@@ -23,13 +25,13 @@ namespace geometry
     public:
         virtual ~Component() = default;
         virtual void accept(visitor::IGeometryVisitor& visitor) const = 0;
-        _NODISCARD std::set<std::shared_ptr<properties::IProperty>> properties() const;
+        _NODISCARD _STD set<_STD shared_ptr<properties::IProperty>> properties() const;
     protected:
-        void addProperty(std::shared_ptr<properties::IProperty> property);
+        void addProperty(_STD shared_ptr<properties::IProperty> property);
     private:
-        std::set<std::shared_ptr<properties::IProperty>> properties_{};
+        _STD set<_STD shared_ptr<properties::IProperty>> properties_{};
     };
-    
+
 
     class Offset final : public Component {
     public:
@@ -47,6 +49,14 @@ namespace geometry
         double x_{};
         double y_{};
     };
+    template <typename ... Args>
+    void Offset::update(Args&&... args)
+    {
+        static_assert(sizeof...(Args) == 2, "Offset update requires two arguments (x, y)");
+        _STD tie(x_, y_) = _STD forward_as_tuple(_STD forward<Args>(args)...);
+    }
+
+
 
     class Skew final : public Component {
     public:
@@ -62,13 +72,21 @@ namespace geometry
         double x_{};
         double y_{};
     };
+    template <typename ... Args>
+    void Skew::update(Args&&... args)
+    {
+        static_assert(sizeof...(Args) == 2, "Update update requires two arguments (x, y)");
+        _STD tie(x_, y_) = _STD forward_as_tuple(_STD forward<Args>(args)...);
+    }
 
-    class Geometry final: public Component
+
+    class Geometry final : public Component
     {
     public:
-        class Builder;
         Geometry();
         void accept(visitor::IGeometryVisitor& visitor) const override;
+        template<typename C, typename... Args>
+        void setComponent(Args&&... args) noexcept;
     private:
         template<typename C, typename... Args>
         void addComponent(Args&&... args) noexcept;
@@ -77,78 +95,48 @@ namespace geometry
         void modifyComponent(Args&&... args) noexcept;
 
         template<typename C>
-        std::shared_ptr<C> getComponent() const;
+        _STD shared_ptr<C> getComponent() const;
     private:
-        std::unordered_map<std::type_index, std::shared_ptr<Component>> components_{};
+        _STD unordered_map<_STD type_index, _STD shared_ptr<Component>> components_{};
     };
 
-    template <typename ... Args>
-    void Offset::update(Args&&... args)
-    {
-        static_assert(sizeof...(Args) == 2, "Offset update requires two arguments (x, y)");
-        std::tie(x_, y_) = std::forward_as_tuple(std::forward<Args>(args)...);
-    }
 
-    template <typename ... Args>
-    void Skew::update(Args&&... args)
+    template <typename C, typename ... Args>
+    void Geometry::setComponent(Args&&... args) noexcept
     {
-        static_assert(sizeof...(Args) == 2, "Update update requires two arguments (x, y)");
-        std::tie(x_, y_) = std::forward_as_tuple(std::forward<Args>(args)...);
+        if (const auto it = components_.find(_STD type_index(typeid(C)));
+            it != components_.end()) {
+            modifyComponent<C>(_STD forward<Args>(args)...);
+        }
     }
 
     template<typename C, typename ...Args>
     void Geometry::addComponent(Args && ...args) noexcept
     {
-        using ComponentType = std::decay_t<C>;
-        const auto component{ std::make_shared<ComponentType>(std::forward<Args>(args)...) };
-        components_.emplace(std::type_index(typeid(ComponentType)), component);
-        for (const std::shared_ptr<properties::IProperty>& c : component->properties()) {
+        using ComponentType = _STD decay_t<C>;
+        const auto component{ _STD make_shared<ComponentType>(_STD forward<Args>(args)...) };
+        components_.emplace(_STD type_index(typeid(ComponentType)), component);
+        for (const _STD shared_ptr<properties::IProperty>& c : component->properties()) {
             addProperty(c);
         }
     }
-    class Geometry::Builder
-    {
-    public:
-        Builder() = default;
-        explicit Builder(Geometry geometry) noexcept;
-        template<typename C, typename... Args>
-        Builder& setComponent(Args&&... args) noexcept;
-        Geometry build();
-    private:
-        Geometry geometry_{};
-    };
-
-	template<typename C, typename... Args>
-	Geometry::Builder& Geometry::Builder::setComponent(Args&&... args) noexcept {
-        // Check if the component already exists
-        if (const auto it = geometry_.components_.find(std::type_index(typeid(C))); 
-            it != geometry_.components_.end()) {
-            // If it exists, modify the existing component
-            geometry_.modifyComponent<C>(std::forward<Args>(args)...);
-        }
-        else {
-            // If it doesn't exist, add a new component
-            geometry_.addComponent<C>(std::forward<Args>(args)...);
-        }
-        return *this;
-	}
 
     template <typename C, typename ... Args>
     void Geometry::modifyComponent(Args&&... args) noexcept
     {
-        using ComponentType = std::decay_t<C>;
-        if (const auto it = components_.find(std::type_index(typeid(ComponentType)));
+        using ComponentType = _STD decay_t<C>;
+        if (const auto it = components_.find(_STD type_index(typeid(ComponentType)));
             it != components_.end()) {
-            static_cast<C*>(it->second.get())->update(std::forward<Args>(args)...);
+            static_cast<C*>(it->second.get())->update(_STD forward<Args>(args)...);
         }
     }
 
     template <typename C>
-    std::shared_ptr<C> Geometry::getComponent() const
+    _STD shared_ptr<C> Geometry::getComponent() const
     {
-        const auto it{ components_.find(typeid(C)) };
-        if (it != components_.end()) {
-            return std::dynamic_pointer_cast<C>(it->second);
+        if (const auto it{ components_.find(typeid(C)) };
+            it != components_.end()) {
+            return _STD dynamic_pointer_cast<C>(it->second);
         }
         return nullptr;
     }

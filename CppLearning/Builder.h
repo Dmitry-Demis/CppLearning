@@ -1,6 +1,7 @@
 #ifndef BUILDER_H
 #define BUILDER_H
 #include <functional>
+#include <memory>
 
 namespace builder
 {
@@ -9,17 +10,18 @@ namespace builder
 	{
 	public:
 		Builder() = default;
-		explicit Builder(T& object) noexcept;
+		explicit Builder(_STD shared_ptr<T> object) noexcept;
 		template<typename C, typename... Args>
 		Builder& setComponent(Args&&... args) noexcept;
-		T build();
+		_STD shared_ptr<T> build();
+		Builder& operator=(_STD shared_ptr<T> object);
 	private:
-		std::reference_wrapper<T> object_{};
+		_STD shared_ptr<T> object_{_STD make_shared<T>()};
 	};
 
 	template <typename T>
-	Builder<T>::Builder(T& object) noexcept
-		: object_{ object_ }
+	Builder<T>::Builder(_STD shared_ptr<T> object) noexcept
+		: object_{ _STD move(object) }
 	{
 	}
 
@@ -27,6 +29,20 @@ namespace builder
 	template <typename C, typename ... Args>
 	Builder<T>& Builder<T>::setComponent(Args&&... args) noexcept
 	{
+		object_->template setComponent<C>(_STD forward<Args>(args)...);
+		return *this;
+	}
+
+	template <typename T>
+	_STD shared_ptr<T> Builder<T>::build()
+	{
+		return _STD move(object_);
+	}
+
+	template <typename T>
+	Builder<T>& Builder<T>::operator=(_STD shared_ptr<T> object)
+	{
+		object_ = _STD move(object);
 		return *this;
 	}
 }

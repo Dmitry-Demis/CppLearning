@@ -21,28 +21,28 @@ namespace visitor
 	class IGeometryVisitor
 	{
 	public:
-		explicit IGeometryVisitor(std::shared_ptr<strategy::IOutputStrategy> strategy);
+		explicit IGeometryVisitor(_STD shared_ptr<strategy::IOutputStrategy> strategy);
 		virtual ~IGeometryVisitor() = default;
 		virtual void visit(const geometry::Offset& offset) = 0;
 		virtual void visit(const geometry::Skew& skew) = 0;
 		virtual void visit(const geometry::Geometry& geometry) = 0;
 	protected:
-		void print(const std::stringstream& stream) const;
+		void print(const _STD stringstream& stream) const;
 	private:
-		std::shared_ptr<strategy::IOutputStrategy> outputStrategy_{};
+		_STD shared_ptr<strategy::IOutputStrategy> outputStrategy_{};
 	};
 
 	class GeometryPrinter: public IGeometryVisitor
 	{
 		using inherited = IGeometryVisitor;
 	public:
-		explicit GeometryPrinter(std::shared_ptr<strategy::IOutputStrategy> strategy);
+		explicit GeometryPrinter(_STD shared_ptr<strategy::IOutputStrategy> strategy);
 		void visit(const geometry::Offset& offset) override;
 		void visit(const geometry::Skew& skew) override;
 		void visit(const geometry::Geometry& geometry) override;
 	private:
 		template<typename T>
-		void print(const std::string& name, const T& component) const;
+		void print(const _STD string& name, const T& component) const;
 	};
 	
 }

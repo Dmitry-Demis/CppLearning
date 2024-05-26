@@ -1,6 +1,6 @@
 #include "Strategy.h"
 
-void strategy::ConsoleOutputStrategy::print(const std::string& message) const
+void strategy::ConsoleOutputStrategy::print(const _STD string& message) const
 {
-	std::cout << message;
+	_STD cout << message;
 }

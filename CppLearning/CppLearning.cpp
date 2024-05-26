@@ -9,18 +9,19 @@
 
 int main() {
 
-    visitor::GeometryPrinter printer{std::make_shared<strategy::ConsoleOutputStrategy>()};
+    visitor::GeometryPrinter printer{_STD make_shared<strategy::ConsoleOutputStrategy>()};
 
-	geometry::Geometry geometry = geometry::Geometry::Builder{}
-	                              .setComponent<geometry::Offset>(30.0, 40.0)
-	                              .setComponent<geometry::Skew>(10.0, 20.0)
-	                              .build();
-    geometry.accept(printer);
+   auto geometry = builder::Builder<geometry::Geometry>{}
+        .setComponent<geometry::Offset>(3.0, 12)
+        .setComponent<geometry::Skew>(10.0, 15.)
+        .build();
 
-    geometry = geometry::Geometry::Builder{ geometry }
+    geometry->accept(printer);
+
+    auto r = builder::Builder<geometry::Geometry>{ geometry }
                .setComponent<geometry::Skew>(5.0, 2.0)
                .build();
-    geometry.accept(printer);
+    geometry->accept(printer);
 
 
     return 0;
